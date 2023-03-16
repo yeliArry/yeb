@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdax.yeb.dao.TemployeeDao">
+    <!--自定义封装规则：使用级联属性封装联合查询出的结果-->
+    <resultMap id="temInfo" type="com.hdax.yeb.entity.Temployee">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="gender" column="gender"></result>
+        <result property="birthday" column="birthday"></result>
+        <result property="idCard" column="idCard"></result>
+        <result property="wedlock" column="wedlock"></result>
+        <result property="nationId" column="nationId"></result>
+        <result property="nativePlace" column="nativePlace"></result>
+        <result property="politicId" column="politicId"></result>
+        <result property="email" column="email"></result>
+        <result property="phone" column="phone"></result>
+        <result property="address" column="address"></result>
+        <result property="departmentId" column="departmentId"></result>
+        <result property="jobLevelId" column="jobLevelId"></result>
+        <result property="posId" column="posId"></result>
+        <result property="engageForm" column="engageForm"></result>
+        <result property="tiptopDegree" column="tiptopDegree"></result>
+        <result property="specialty" column="specialty"></result>
+        <result property="school" column="school"></result>
+        <result property="beginDate" column="beginDate"></result>
+        <result property="workState" column="workState"></result>
+        <result property="workID" column="workID"></result>
+        <result property="contractTerm" column="contractTerm"></result>
+        <result property="conversionTime" column="conversionTime"></result>
+        <result property="notWorkDate" column="notWorkDate"></result>
+        <result property="beginContract" column="beginContract"></result>
+        <result property="endContract" column="endContract"></result>
+        <result property="workAge" column="workAge"></result>
+        <result property="salaryId" column="salaryId"></result>
+    </resultMap>
+
+    <resultMap id="temMap" type="com.hdax.yeb.entity.Temployee" extends="temInfo">
+        <association property="tsalary" column="salaryId" javaType="com.hdax.yeb.entity.Tsalary">
+            <id property="id" column="sid"></id>
+            <result property="name" column="sname"></result>
+            <result property="basicSalary" column="sbasicSalary"></result>
+            <result property="bonus" column="sbonus"></result>
+            <result property="lunchSalary" column="slunchSalary"></result>
+            <result property="trafficSalary" column="strafficSalary"></result>
+            <result property="allSalary" column="sallSalary"></result>
+            <result property="pensionBase" column="spensionBase"></result>
+            <result property="pensionPer" column="spensionPer"></result>
+            <result property="createDate" column="screateDate"></result>
+            <result property="medicalBase" column="smedicalBase"></result>
+            <result property="medicalPer" column="smedicalPer"></result>
+            <result property="accumulationFundBase" column="saccumulationFundBase"></result>
+            <result property="accumulationFundPer" column="saccumulationFundPer"></result>
+        </association>
+        <association property="tdepartment" column="departmentId" javaType="com.hdax.yeb.entity.Tdepartment">
+            <id property="id" column="did"></id>
+            <result property="name" column="dname"></result>
+            <result property="salaryId" column="dsalaryId"></result>
+        </association>
+        <association property="tjoblevel" column="jobLevelId" javaType="com.hdax.yeb.entity.Tjoblevel">
+            <id property="id" column="jid"></id>
+            <result property="name" column="jname"></result>
+
+        </association>
+        <association property="tposition" column="posId" javaType="com.hdax.yeb.entity.Tposition">
+            <id property="id" column="poid"></id>
+            <result property="name" column="poname"></result>
+
+        </association>
+        <association property="tnation" column="nationId" javaType="com.hdax.yeb.entity.Tnation">
+            <id property="id" column="nid"></id>
+            <result property="name" column="nname"></result>
+        </association>
+        <association property="tpoliticsStatus" column="politicId" javaType="com.hdax.yeb.entity.TpoliticsStatus">
+            <id property="id" column="pid"></id>
+            <result property="name" column="pname"></result>
+        </association>
+        <association property="tsalaryAdjust" column="aid" javaType="com.hdax.yeb.entity.TsalaryAdjust">
+            <id property="id" column="aid"></id>
+            <result property="eid" column="aeid"></result>
+            <result property="asDate" column="aasDate"></result>
+            <result property="beforeSalary" column="abeforeSalary"></result>
+            <result property="afterSalary" column="aafterSalary"></result>
+            <result property="reason" column="areason"></result>
+        </association>
+
+
+        <collection property="temployeeec" column="id" ofType="Temployeeec"
+                    select="com.hdax.yeb.dao.TemployeeecDao.queryEid">
+            <!--            <id property="id" column="cid"></id>-->
+            <!--            <result property="eid" column="eid"></result>-->
+            <!--            <result property="ecDate" column="cecDate"></result>-->
+            <!--            <result property="ecReason" column="cecReason"></result>-->
+            <!--            <result property="ecPoint" column="cecPoint"></result>-->
+            <!--            <result property="ecType" column="cecType"></result>-->
+        </collection>
+
+    </resultMap>
+    <update id="update01" parameterType="int">
+        update t_employee
+        set salaryId = #{salaryId}
+        where id = #{id}
+    </update>
+    <update id="updOneEmp" parameterType="com.hdax.yeb.entity.Temployee">
+        update t_employee
+        set departmentId = #{departmentId},
+            posId        = #{posId},
+            salaryId     = #{salaryId}
+        where id = #{id}
+    </update>
+
+
+    <select id="query01" resultMap="temMap">
+        select t_employee.*,
+               t_nation.`name`               as nname,
+               t_politics_status.`name`      as pname,
+               t_department.name             as dname,
+               t_joblevel.`name`             as jname,
+               t_position.name               as poname,
+               t_salary.id                   as sid,
+               t_salary.`name`               as sname,
+               t_salary.basicSalary          as sbasicSalary,
+               t_salary.bonus                as sbonus,
+               t_salary.lunchSalary          as slunchSalary,
+               t_salary.trafficSalary        as strafficSalary,
+               t_salary.allSalary            as sallSalary,
+               t_salary.pensionBase          as spensionBase,
+               t_salary.pensionPer           as spensionPer,
+               t_salary.createDate           as screateDate,
+               t_salary.medicalBase          as smedicalBase,
+               t_salary.medicalPer           as smedicalPer,
+               t_salary.accumulationFundBase as saccumulationFundBase,
+               t_salary.accumulationFundPer  as saccumulationFundPer
+
+        from t_employee
+                 left join t_nation on t_employee.`nationId` = t_nation.`id`
+                 left join t_politics_status on t_employee.`politicId` = t_politics_status.`id`
+                 left join t_department on t_employee.`departmentId` = t_department.`id`
+                 left join t_joblevel on t_employee.`jobLevelId` = t_joblevel.`id`
+                 left join t_position on t_employee.`posId` = t_position.`id`
+                 left join t_salary on t_employee.salaryId = t_salary.id
+
+
+        limit #{start},#{end}
+    </select>
+
+
+    <select id="query10" resultMap="temMap">
+        select t_employee.*,
+               t_department.name             as dname,
+               t_department.salaryId         as dsalaryId,
+               t_salary.id                   as sid,
+               t_salary.`name`               as sname,
+               t_salary.basicSalary          as sbasicSalary,
+               t_salary.bonus                as sbonus,
+               t_salary.lunchSalary          as slunchSalary,
+               t_salary.trafficSalary        as strafficSalary,
+               t_salary.allSalary            as sallSalary,
+               t_salary.pensionBase          as spensionBase,
+               t_salary.pensionPer           as spensionPer,
+               t_salary.createDate           as screateDate,
+               t_salary.medicalBase          as smedicalBase,
+               t_salary.medicalPer           as smedicalPer,
+               t_salary.accumulationFundBase as saccumulationFundBase,
+               t_salary.accumulationFundPer  as saccumulationFundPer
+        from t_employee
+                 left join t_department on t_employee.`departmentId` = t_department.`id`
+                 left join t_salary on t_employee.salaryId = t_salary.id
+        limit #{start},#{end}
+    </select>
+    <select id="query02" resultMap="temInfo">
+        select t_employee.*,
+               t_nation.`name`               as nname,
+               t_politics_status.`name`      as pname,
+               t_department.name             as dname,
+               t_joblevel.`name`             as jname,
+               t_position.name               as poname,
+               t_salary.id                   as sid,
+               t_salary.`name`               as sname,
+               t_salary.basicSalary          as sbasicSalary,
+               t_salary.bonus                as sbonus,
+               t_salary.lunchSalary          as slunchSalary,
+               t_salary.trafficSalary        as strafficSalary,
+               t_salary.allSalary            as sallSalary,
+               t_salary.pensionBase          as spensionBase,
+               t_salary.pensionPer           as spensionPer,
+               t_salary.createDate           as screateDate,
+               t_salary.medicalBase          as smedicalBase,
+               t_salary.medicalPer           as smedicalPer,
+               t_salary.accumulationFundBase as saccumulationFundBase,
+               t_salary.accumulationFundPer  as saccumulationFundPer
+
+        from t_employee
+                 left join t_nation on t_employee.`nationId` = t_nation.`id`
+                 left join t_politics_status on t_employee.`politicId` = t_politics_status.`id`
+                 left join t_department on t_employee.`departmentId` = t_department.`id`
+                 left join t_joblevel on t_employee.`jobLevelId` = t_joblevel.`id`
+                 left join t_position on t_employee.`posId` = t_position.`id`
+                 left join t_salary on t_employee.salaryId = t_salary.id
+
+
+    </select>
+    <select id="getCount" parameterType="string" resultType="long">
+        select count(*)
+        from t_employee
+    </select>
+
+    <select id="getName" parameterType="string" resultType="Temployee">
+        select *
+        from t_employee
+        where name = #{name}
+    </select>
+    <select id="getOneEmp" resultType="com.hdax.yeb.entity.Temployee">
+        select *
+        from t_employee
+        where id = #{id}
+    </select>
+    <select id="getMoneyById" resultMap="temMap" parameterType="int">
+        select e.*,
+               s.id                   as sid,
+               s.`name`               as sname,
+               s.basicSalary          as sbasicSalary,
+               s.bonus                as sbonus,
+               s.lunchSalary          as slunchSalary,
+               s.trafficSalary        as strafficSalary,
+               s.allSalary            as sallSalary,
+               s.pensionBase          as spensionBase,
+               s.pensionPer           as spensionPer,
+               s.createDate           as screateDate,
+               s.medicalBase          as smedicalBase,
+               s.medicalPer           as smedicalPer,
+               s.accumulationFundBase as saccumulationFundBase,
+               s.accumulationFundPer  as saccumulationFundPer,
+               a.id                   as aid,
+               a.`eid`                as aeid,
+               a.asDate               as aasDate,
+               a.beforeSalary         as abeforeSalary,
+               a.afterSalary          as aafterSalary,
+               a.reason               as areason
+        from t_employee e
+                 left join t_salary s
+                           on e.salaryId = s.id
+                 left join t_salary_adjust a
+                           on a.`eid` = e.id
+        where e.id = #{id}
+
+    </select>
+    <select id="query03" resultMap="temMap">
+        select e.*,
+               s.id                   as sid,
+               s.`name`               as sname,
+               s.basicSalary          as sbasicSalary,
+               s.bonus                as sbonus,
+               s.lunchSalary          as slunchSalary,
+               s.trafficSalary        as strafficSalary,
+               s.allSalary            as sallSalary,
+               s.pensionBase          as spensionBase,
+               s.pensionPer           as spensionPer,
+               s.createDate           as screateDate,
+               s.medicalBase          as smedicalBase,
+               s.medicalPer           as smedicalPer,
+               s.accumulationFundBase as saccumulationFundBase,
+               s.accumulationFundPer  as saccumulationFundPer,
+               a.id                   as aid,
+               a.eid                  as aeid,
+               a.asDate               as aasDate,
+               a.beforeSalary         as abeforeSalary,
+               a.afterSalary          as aafterSalary,
+               a.reason               as areason,
+               c.id                   as cid,
+               c.eid                  as ceid,
+               c.ecDate               as cecDate,
+               c.ecReason             as cecReason,
+               c.ecPoint              as cecPoint,
+               c.ecType               as cecType
+
+        from t_employee e
+                 left join t_salary s
+                           on e.salaryId = s.id
+                 left join t_salary_adjust a
+                           on e.id = a.eid
+                 left join t_employee_ec c
+                           on e.id = c.eid
+        group by id
+
+        limit #{start},#{end}
+
+    </select>
+    <select id="getPosId" resultType="com.hdax.yeb.entity.Temployee">
+        select posId
+        from t_employee
+        where posId = #{posId}
+    </select>
+
+    <select id="getByTemp" resultType="com.hdax.yeb.entity.Temployee" parameterType="int">
+        select *
+        from t_employee
+        where posId = #{posId}
+    </select>
+    <select id="getByjobLevelId" resultType="com.hdax.yeb.entity.Temployee">
+        select *
+        from t_employee
+        where jobLevelId = #{jobLevelId}
+    </select>
+
+    <!--高级搜索-->
+    <select id="gaoquery" resultMap="temMap">
+        select
+        t_employee.*,
+        t_nation.id as nid,
+        t_nation.`name` as nname,
+        t_politics_status.id as pid,
+        t_politics_status.`name` as pname,
+        t_department.id as did,
+        t_department.name as dname,
+        t_joblevel.id as jid,
+        t_joblevel.`name` as jname,
+        t_position.id as poid,
+        t_position.name as poname ,
+        t_salary.id as sid,
+        t_salary.`name` as sname,
+        t_salary.basicSalary as sbasicSalary,
+        t_salary.bonus as sbonus,
+        t_salary.lunchSalary as slunchSalary,
+        t_salary.trafficSalary as strafficSalary,
+        t_salary.allSalary as sallSalary,
+        t_salary.pensionBase as spensionBase,
+        t_salary.pensionPer as spensionPer,
+        t_salary.createDate as screateDate,
+        t_salary.medicalBase as smedicalBase,
+        t_salary.medicalPer as smedicalPer,
+        t_salary.accumulationFundBase as saccumulationFundBase,
+        t_salary.accumulationFundPer as saccumulationFundPer
+
+        from
+        t_employee
+        left join t_nation on t_employee.`nationid`=t_nation.`id`
+        left join t_politics_status on t_employee.`politicId`=t_politics_status.`id`
+        left join t_department on t_employee.`departmentId`=t_department.`id`
+        left join t_joblevel on t_employee.`joblevelId`=t_joblevel.`id`
+        left join t_position on t_employee.`posId`=t_position.`id`
+        left join t_salary on t_employee.salaryId = t_salary.id
+
+        <where>
+            <if test="politicId!= 0">
+                and politicId =#{politicId}
+            </if>
+            <if test="nationId!= 0">
+                and nationId =#{nationId}
+            </if>
+            <if test="departmentId != 0">
+                and departmentId =#{departmentId}
+            </if>
+            <if test="jobLevelId != 0">
+                and jobLevelId =#{jobLevelId}
+            </if>
+            <if test="posId!=0">
+                and posId=#{posId}
+            </if>
+            <if test="engageForm!=null and engageForm!=''">
+                and engageform like concat('%',#{engageForm},'%')
+            </if>
+        </where>
+        limit #{start},#{end}
+    </select>
+    <select id="gaoqueryCount" parameterType="String" resultType="long">
+        select count(*) from t_employee
+        <where>
+            <if test="politicId!= 0">
+                and politicId =#{politicId}
+            </if>
+            <if test="nationId!= 0">
+                and nationId =#{nationId}
+            </if>
+            <if test="departmentId != 0">
+                and departmentId =#{departmentId}
+            </if>
+            <if test="jobLevelId != 0">
+                and jobLevelId =#{jobLevelId}
+            </if>
+            <if test="posId!=0">
+                and posId=#{posId}
+            </if>
+            <if test="engageForm!=null and engageForm!=''">
+                and engageForm like concat('%',#{engageForm},'%')
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

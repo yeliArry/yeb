@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdax.yeb.dao.ToplogDao">
+
+    <resultMap id="temInfo" type="com.hdax.yeb.entity.Toplog">
+        <result property="id" column="id"></result>
+        <result property="addDate" column="addDate"></result>
+        <result property="operate" column="operate"></result>
+        <result property="adminid" column="adminid"></result>
+    </resultMap>
+    <resultMap id="temMap" type="com.hdax.yeb.entity.Toplog" extends="temInfo">
+        <association property="tadmin" column="adminid" javaType="com.hdax.yeb.entity.Tadmin">
+            <id property="id" column="aid"></id>
+            <result property="name" column="aname"></result>
+            <result property="phone" column="aphone"></result>
+            <result property="telephone" column="atelephone"></result>
+            <result property="address" column="aaddress"></result>
+            <result property="enabled" column="aenabled"></result>
+            <result property="username" column="ausername"></result>
+            <result property="password" column="apassword"></result>
+            <result property="userFace" column="auserFace"></result>
+        </association>
+    </resultMap>
+
+
+    <select id="query01" resultMap="temMap" parameterType="String">
+        select
+        o.*,
+        a.id as aid,
+        a.name as aname,
+        a.phone as aphone,
+        a.telephone as atelephone,
+        a.address as aaddress ,
+        a.enabled as aenabled,
+        a.username as ausername,
+        a.password as apassword,
+        a.userFace as auserFace
+        from
+        t_oplog o
+        inner join
+        t_admin a
+        on
+        o.adminid = a.id
+        <where>
+            <if test="name!=null and name!=''">
+                and a.name like concat('%',#{name},'%')
+            </if>
+        </where>
+
+    </select>
+</mapper>

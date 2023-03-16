@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdax.yeb.dao.TdepartmentDao">
+
+    <resultMap id="BaseResultMap" type="com.hdax.yeb.entity.Tdepartment">
+        <id column="id" property="id"/>
+        <result property="name" column="name"/>
+        <result property="parentId" column="parentId"/>
+        <result property="depPath" column="depPath"/>
+        <result property="enabled" column="enabled"/>
+        <result property="isParent" column="isParent"/>
+    </resultMap>
+
+    <resultMap id="TdepartmentWithChildren" type="com.hdax.yeb.entity.Tdepartment" extends="BaseResultMap">
+        <collection property="children" ofType="com.hdax.yeb.entity.Tdepartment"
+                    select="com.hdax.yeb.dao.TdepartmentDao.getAllDepartments" column="id">
+
+        </collection>
+    </resultMap>
+    <update id="updsalaryId">
+        update t_department
+        set salaryId = #{salaryId}
+        where id = #{id}
+    </update>
+    <update id="updsalary">
+        update t_department
+        set salaryId = #{salaryId}
+        where id = #{id}
+    </update>
+
+
+    <delete id="del" statementType="CALLABLE">
+        call deleteDep(#{id,mode=IN,jdbcType=INTEGER}, #{result,mode=OUT,jdbcType=INTEGER})
+    </delete>
+
+    <select id="addDep" statementType="CALLABLE">
+        call addDep(#{name,mode=IN,jdbcType=VARCHAR}, #{parentId,mode=IN,jdbcType=INTEGER},
+                    #{enabled,mode=IN,jdbcType=BOOLEAN}, #{result,mode=OUT,jdbcType=INTEGER},
+                    #{id,mode=OUT,jdbcType=INTEGER})
+    </select>
+
+    <select id="getAllDepartments" resultMap="TdepartmentWithChildren">
+        select *
+        from t_department
+        where parentId = #{parentId}
+
+    </select>
+    <select id="queryAll" resultType="com.hdax.yeb.entity.Tdepartment">
+        select *
+        from t_department
+    </select>
+    <select id="getId" resultType="com.hdax.yeb.entity.Tdepartment" parameterType="int">
+        select *
+        from t_department
+        where id = #{id}
+    </select>
+    <select id="get" resultType="com.hdax.yeb.entity.Tdepartment">
+        select *
+        from t_department
+        where name = #{name};
+    </select>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdax.yeb.dao.TemployeeTrainDao">
+    <resultMap id="temInfo" type="com.hdax.yeb.entity.TemployeeTrain">
+        <id property="id" column="id"></id>
+        <result property="eid" column="eid"></result>
+        <result property="trainDate" column="trainDate"></result>
+        <result property="trainContent" column="trainContent"></result>
+        <result property="remark" column="remark"></result>
+    </resultMap>
+    <resultMap id="temMap" type="com.hdax.yeb.entity.TemployeeTrain" extends="temInfo">
+        <association property="temployee" column="teid" javaType="com.hdax.yeb.entity.Temployee">
+            <id property="id" column="teid"></id>
+            <result property="name" column="tename"></result>
+        </association>
+    </resultMap>
+
+
+    <select id="query01" resultMap="temMap">
+        select tt.*,
+               te.id   as teid,
+               te.name as tename
+        from t_employee_train tt,
+             t_employee te
+        where tt.eid = te.id
+
+        limit #{start},#{end}
+    </select>
+
+    <select id="getCount" resultType="long">
+        select COUNT(*)
+        from t_employee_train
+
+    </select>
+</mapper>

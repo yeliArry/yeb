@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdax.yeb.dao.ApplicationDao">
+
+    <resultMap id="appMap" type="com.hdax.yeb.entity.Application">
+        <id column="id" property="id"></id>
+        <result column="eid" property="eid"></result>
+        <result column="lavetype" property="lavetype"></result>
+        <result column="applicatdate" property="applicatdate"></result>
+        <result column="leavebegindate" property="leavebegindate"></result>
+        <result column="leaveenddate" property="leaveenddate"></result>
+        <result column="duration" property="duration"></result>
+        <result property="auditresults" column="auditresults"></result>
+        <result property="phone" column="phone"></result>
+        <result property="state" column="state"></result>
+        <result property="lavedesc" column="lavedesc"></result>
+        <result property="bossstate" column="bossstate"></result>
+        <association property="temployee" column="aid" javaType="com.hdax.yeb.entity.Temployee">
+            <id property="id" column="aid"></id>
+            <result property="name" column="name"></result>
+        </association>
+    </resultMap>
+
+
+    <insert id="add">
+        insert into application
+        values (null, #{eid}, #{lavetype}, #{applicatdate}, #{leavebegindate}, #{leaveenddate}, #{phone}, #{duration},
+                #{state}, #{auditresults}, #{lavedesc}, #{bossstate})
+    </insert>
+    <update id="updTongguo">
+        update application
+        set state=#{state},
+            auditresults=#{auditresults},
+            bossstate=#{bossstate}
+        where id = #{id}
+    </update>
+
+
+    <select id="queryAll" resultMap="appMap">
+        select application.*,t_employee.`id` as aid,t_employee.`name`
+        from application left join t_employee on application.eid=t_employee.`id`
+        <where>
+            <if test="lavetype!=null and lavetype!=''">
+                and lavetype like concat('%',#{lavetype},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getCount" resultType="java.lang.Long">
+        select count(*)
+        from application
+    </select>
+    <select id="queryAllstate" resultMap="appMap">
+        select application.*, t_employee.`id` as aid, t_employee.`name`
+        from application
+                 left join t_employee on application.eid = t_employee.`id`
+        where bossstate = 1
+    </select>
+    <select id="queryAllstate02" resultMap="appMap">
+        select application.*,t_employee.`id` as aid,t_employee.`name`
+        from application left join t_employee on application.eid=t_employee.`id`
+        where state = 2
+        <if test="lavetype!=null and lavetype!=''">
+            and lavetype like concat('%',#{lavetype},'%')
+        </if>
+    </select>
+    <select id="queryAllstate04" resultMap="appMap">
+        select application.*, t_employee.`id` as aid, t_employee.`name`
+        from application
+                 left join t_employee on application.eid = t_employee.`id`
+        where bossstate = 2
+    </select>
+    <select id="queryAllstate03" resultMap="appMap">
+        select application.*, t_employee.`id` as aid, t_employee.`name`
+        from application
+                 left join t_employee on application.eid = t_employee.`id`
+        where state = 1
+    </select>
+    <select id="getId" resultType="com.hdax.yeb.entity.Application">
+        select *
+        from application
+        where id = #{id}
+    </select>
+</mapper>

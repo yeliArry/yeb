@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdax.yeb.dao.TemRemoveDao">
+
+    <resultMap id="temInfo" type="com.hdax.yeb.entity.TemRemove">
+        <id property="id" column="id"></id>
+        <result property="eid" column="eid"></result>
+        <result property="afterDepId" column="afterDepId"></result>
+        <result property="afterJobId" column="afterJobId"></result>
+        <result property="removeDate" column="removeDate"></result>
+        <result property="reason" column="reason"></result>
+        <result property="state" column="state"></result>
+        <result property="result" column="result"></result>
+    </resultMap>
+
+    <resultMap id="temMap" type="com.hdax.yeb.entity.TemRemove" extends="temInfo">
+        <association property="temployee" column="tid" javaType="com.hdax.yeb.entity.Temployee">
+            <id property="id" column="tid"></id>
+            <result property="name" column="tname"></result>
+        </association>
+        <association property="tdepartment" column="did" javaType="com.hdax.yeb.entity.Tdepartment">
+            <id property="id" column="did"></id>
+            <result property="name" column="dname"></result>
+        </association>
+        <association property="tposition" column="pid" javaType="com.hdax.yeb.entity.Tposition">
+            <id property="id" column="pid"></id>
+            <result property="name" column="pname"></result>
+        </association>
+    </resultMap>
+    <!--    修改调动审批表的状态和结果-->
+    <update id="updState" parameterType="int">
+        update tem_remove
+        set state  = #{state},
+            result = #{result}
+        where id = #{id}
+    </update>
+
+    <!--    调动审批查询方法-->
+    <select id="queryRem" resultMap="temMap">
+        select r.*, t.id as tid, t.name as tname, d.id as did, d.name as dname, p.id as pid, p.name as pname
+        from tem_remove r
+                 left join t_employee t
+                           on r.eid = t.id
+                 left join t_department d
+                           on r.afterDepId = d.id
+                 left join t_position p
+                           on r.afterJobId = p.id
+
+        limit #{start},#{end}
+
+    </select>
+
+    <!--    查询总条数-->
+    <select id="getCount" resultType="java.lang.Long">
+        select count(*)
+        from tem_remove
+    </select>
+    <select id="getRemEid" resultType="com.hdax.yeb.entity.TemRemove" parameterType="int">
+        select *
+        from tem_remove
+        where eid = #{eid}
+    </select>
+    <select id="queryByState" resultMap="temMap">
+        select r.*, t.id as tid, t.name as tname, d.id as did, d.name as dname, p.id as pid, p.name as pname
+        from tem_remove r
+                 left join t_employee t
+                           on r.eid = t.id
+                 left join t_department d
+                           on r.afterDepId = d.id
+                 left join t_position p
+                           on r.afterJobId = p.id
+        where r.state = 1
+    </select>
+</mapper>

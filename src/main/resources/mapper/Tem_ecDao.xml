@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdax.yeb.dao.Tem_ecDao">
+    <resultMap id="temInfo" type="Tem_ec">
+        <id property="id" column="id"></id>
+        <result property="eid" column="eid"></result>
+        <result property="ecDate" column="ecDate"></result>
+        <result property="ecReason" column="ecReason"></result>
+        <result property="ecPoint" column="ecPoint"></result>
+        <result property="ecType" column="ecType"></result>
+        <result property="remark" column="remark"></result>
+        <result property="state" column="state"></result>
+        <result property="result" column="result"></result>
+        <result property="bossstate" column="bossstate"></result>
+
+        <association property="temployee" column="eid" javaType="Temployee">
+            <id property="id" column="eid"></id>
+            <result property="name" column="ename"></result>
+        </association>
+    </resultMap>
+    <select id="query" resultMap="temInfo">
+        select c.*, e.id as eid, e.name as ename
+        from tem_ec c
+                 left join t_employee e
+                           on c.eid = e.id
+        limit #{start},#{end}
+    </select>
+    <select id="stateQuery" resultMap="temInfo">
+        select c.*, e.id as eid, e.name as ename
+        from tem_ec c
+                 left join t_employee e
+                           on c.eid = e.id
+        where bossstate = 1
+    </select>
+    <select id="stateQuery02" resultMap="temInfo">
+        select c.*, e.id as eid, e.name as ename
+        from tem_ec c
+                 left join t_employee e
+                           on c.eid = e.id
+        where bossstate = 2
+    </select>
+    <select id="getCount" resultType="long">
+        select count(*)
+        from tem_ec
+    </select>
+    <select id="getId" resultType="com.hdax.yeb.entity.Tem_ec">
+        select *
+        from tem_ec
+        where id = #{id}
+    </select>
+    <update id="updateState">
+        update tem_ec
+        set state=#{state},
+            result=#{result},
+            bossstate=#{bossstate}
+        where id = #{id}
+    </update>
+
+</mapper>

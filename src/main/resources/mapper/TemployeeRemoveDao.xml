@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdax.yeb.dao.TemployeeRemoveDao">
+    <resultMap id="temInfo" type="com.hdax.yeb.entity.TemployeeRemove">
+        <id property="id" column="id"></id>
+        <result property="eid" column="eid"></result>
+        <result property="afterDepId" column="afterDepId"></result>
+        <result property="afterJobId" column="afterJobId"></result>
+        <result property="removeDate" column="removeDate"></result>
+        <result property="reason" column="reason"></result>
+        <result property="remark" column="remark"></result>
+    </resultMap>
+    <resultMap id="temMap" type="com.hdax.yeb.entity.TemployeeRemove" extends="temInfo">
+        <association property="temployee" column="eeid" javaType="com.hdax.yeb.entity.Temployee">
+            <id property="id" column="eeid"></id>
+            <result property="name" column="eename"></result>
+        </association>
+        <association property="tdepartment" column="did" javaType="com.hdax.yeb.entity.Tdepartment">
+            <id property="id" column="did"></id>
+            <result property="name" column="dname"></result>
+        </association>
+        <association property="tposition" column="pid" javaType="com.hdax.yeb.entity.Tposition">
+            <id property="id" column="pid"></id>
+            <result property="name" column="pname"></result>
+        </association>
+    </resultMap>
+
+    <select id="query01" resultMap="temMap">
+        select r.*,
+               ee.id   as eeid,
+               ee.name as eename,
+               d.id    as did,
+               d.name  as dname,
+               p.id    as pid,
+               p.name  as pname
+        from t_employee_remove r,
+             t_employee ee,
+             t_department d,
+             t_position p
+        where r.eid = ee.id
+          and r.afterDepId = d.id
+          and r.afterJobId = p.id
+
+        limit #{start},#{end}
+    </select>
+    <select id="getCount" resultType="long">
+        select COUNT(*)
+        from t_employee_remove
+
+    </select>
+    <select id="getByEid" resultType="com.hdax.yeb.entity.TemployeeRemove" parameterType="int">
+        select *
+        from t_employee_remove
+        where eid = #{eid}
+    </select>
+    <select id="getquerytemp" resultType="com.hdax.yeb.entity.TemployeeRemove">
+        select *
+        from t_employee_remove
+        where enabled = 1
+    </select>
+
+
+</mapper>

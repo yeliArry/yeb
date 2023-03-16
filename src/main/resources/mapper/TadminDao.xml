@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdax.yeb.dao.TadminDao">
+    <resultMap id="admInfo" type="com.hdax.yeb.entity.Tadmin">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="phone" column="phone"></result>
+        <result property="telephone" column="telephone"></result>
+        <result property="address" column="address"></result>
+        <result property="enabled" column="enabled"></result>
+        <result property="username" column="username"></result>
+        <result property="password" column="password"></result>
+        <result property="userFace" column="userFace"></result>
+    </resultMap>
+    <resultMap id="admMap" type="com.hdax.yeb.entity.Tadmin" extends="admInfo">
+        <association property="toplog" column="oid" javaType="com.hdax.yeb.entity.Toplog">
+            <id property="id" column="oid"></id>
+            <result property="addDate" column="oaddDate"></result>
+            <result property="operate" column="ooperate"></result>
+            <result property="adminid" column="oadminid"></result>
+        </association>
+        <association property="tadminRole" column="arid" javaType="com.hdax.yeb.entity.TadminRole">
+            <id property="id" column="arid"></id>
+            <result property="adminId" column="aradminId"></result>
+            <result property="rid" column="arrid"></result>
+        </association>
+        <association property="trole" column="rid" javaType="com.hdax.yeb.entity.Trole">
+            <id property="id" column="rid"></id>
+            <result property="name" column="rname"></result>
+            <result property="nameZh" column="rnameZh"></result>
+        </association>
+    </resultMap>
+
+
+    <select id="login" resultType="tadmin">
+        select *
+        from t_admin
+        where username = #{username}
+          and password = #{password}
+    </select>
+    <select id="query01" parameterType="String" resultMap="admMap">
+        select
+        a.*,
+        o.id as oid,
+        o.addDate as oaddDate,
+        o.operate as ooperate,
+        o. adminid as oadminid,
+        ar.id as arid,
+        ar.adminId as aradminId,
+        ar.rid as arrid,
+        r.id as rid,
+        r.name as rname,
+        r.nameZh as rnameZh
+        from
+        t_admin a
+        left join
+        t_oplog o
+        on
+        a.id = o.adminid
+        left join
+        t_admin_role ar
+        on
+        a.id = ar.adminId
+        left join
+        t_role r
+        on
+        ar.rid = r.id
+
+
+        <where>
+            <if test="name!=null and name!=''">
+                and a.name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

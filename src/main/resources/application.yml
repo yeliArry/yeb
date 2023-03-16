@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/yeb
+    username: root
+    password: root
+  thymeleaf:
+    cache: false
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml #mapper
+  type-aliases-package: com.hdax.yeb.entity #别名
+  global-config:
+    db-config:
+      id-type: auto #自增列
+  configuration:
+    map-underscore-to-camel-case: true #驼峰命名
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #控制台控制SQL输出
+server:
+  port: 8082
+
+

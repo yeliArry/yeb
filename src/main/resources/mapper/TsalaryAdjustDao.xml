@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdax.yeb.dao.TsalaryAdjustDao">
+    <resultMap id="temInfo" type="com.hdax.yeb.entity.TsalaryAdjust">
+        <id property="id" column="id"></id>
+        <result property="eid" column="eid"></result>
+        <result property="asDate" column="asDate"></result>
+        <result property="beforeSalary" column="beforeSalary"></result>
+        <result property="afterSalary" column="afterSalary"></result>
+        <result property="reason" column="reason"></result>
+        <result property="remark" column="remark"></result>
+        <result property="state" column="state"></result>
+        <result property="salaryresults" column="salaryresults"></result>
+    </resultMap>
+    <resultMap id="temMap" type="com.hdax.yeb.entity.TsalaryAdjust" extends="temInfo">
+        <association property="temployee" column="eeid" javaType="com.hdax.yeb.entity.Temployee">
+            <id property="id" column="eeid"></id>
+            <result property="name" column="eename"></result>
+        </association>
+    </resultMap>
+    <insert id="addtongyi">
+        insert into t_salary_adjust
+        values (null, #{eid}, #{asDate}, #{beforeSalary}, #{afterSalary}, #{reason}, #{remark}, 0, 0)
+    </insert>
+    <update id="updtongyi">
+        update t_salary_adjust
+        set afterSalary=#{afterSalary},
+            state=#{state},
+            salaryresults=#{salaryresults}
+        where id = #{id}
+    </update>
+    <delete id="delByEid" parameterType="int">
+        delete
+        from t_salary_adjust
+        where eid = #{eid}
+    </delete>
+
+    <select id="query01" resultMap="temMap">
+        select s.*,
+               ee.id   as eeid,
+               ee.name as eename
+        from t_salary_adjust s,
+             t_employee ee
+        where s.eid = ee.id
+
+        limit #{start},#{end}
+    </select>
+    <select id="getCount" resultType="long">
+        select COUNT(*)
+        from t_salary_adjust
+    </select>
+
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdax.yeb.dao.T_salary_approvalDao">
+    <resultMap id="temInfo" type="com.hdax.yeb.entity.T_salary_approval">
+        <id property="id" column="id"></id>
+        <result property="eid" column="eid"></result>
+        <result property="aasDate" column="aasDate"></result>
+        <result property="abeforeSalary" column="abeforeSalary"></result>
+        <result property="aafterSalary" column="aafterSalary"></result>
+        <result property="areason" column="areason"></result>
+        <result property="aremark" column="aremark"></result>
+        <result property="astate" column="astate"></result>
+        <result property="asalaryresults" column="asalaryresults"></result>
+        <association property="temployee" column="eeid" javaType="com.hdax.yeb.entity.Temployee">
+            <id property="id" column="eeid"></id>
+            <result property="name" column="eename"></result>
+        </association>
+    </resultMap>
+    <insert id="add">
+        insert into t_salary_approval
+        values (null, #{eid}, #{aasDate}, #{abeforeSalary}, #{aafterSalary}, #{areason}, #{aremark}, #{astate}, 0)
+    </insert>
+    <update id="updtongyi">
+        update t_salary_adjust
+        set afterSalary=#{afterSalary},
+            state=#{state},
+            salaryresults=#{salaryresults}
+        where id = #{id}
+    </update>
+    <update id="updatezhangtai">
+        update t_salary_approval
+        set astate=#{astate},
+            asalaryresults=#{asalaryresults}
+        where id = #{id}
+    </update>
+    <update id="updatearemark">
+        update t_salary_approval
+        set aremark=#{aremark}
+        where id = #{id}
+    </update>
+    <delete id="delByEid" parameterType="int">
+        delete
+        from t_salary_adjust
+        where eid = #{eid}
+    </delete>
+
+
+    <select id="getCount" resultType="long">
+        select COUNT(*)
+        from t_salary_approval
+    </select>
+    <select id="query02" resultMap="temInfo">
+        select t_salary_approval.*,t_employee.`id` as eeid,
+        t_employee.`name` as eename
+        from t_salary_approval left join
+        t_employee on t_salary_approval.`eid` = t_employee.id
+        <where>
+            <if test="eid!=-1">
+                and eid = #{eid}
+            </if>
+        </where>
+        limit #{start},#{end}
+    </select>
+    <select id="query03" resultMap="temInfo">
+        select t_salary_approval.*,
+               t_employee.`id`   as eeid,
+               t_employee.`name` as eename
+        from t_salary_approval
+                 left join
+             t_employee on t_salary_approval.`eid` = t_employee.id
+        where t_salary_approval.`astate` = 1
+
+    </select>
+
+</mapper>
